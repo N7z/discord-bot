@@ -8,19 +8,19 @@ export async function invest(msg: Message) {
   const args = msg.content.split(' ');
   const amountStr = args[1];
   if (!amountStr)
-    return msg.reply(`❌ Você precisa especificar um valor de Guigacoins.`);
+    return msg.reply(`❌ | Você precisa especificar um valor de Guigacoins.`);
 
   const amount = amountStr === 'all' ? user.balance : parseInt(amountStr);
   if (isNaN(amount) || amount <= 0)
-    return msg.reply(`❌ Você precisa especificar um número ou 'all'.`);
+    return msg.reply(`❌ | Você precisa especificar um número ou 'all'.`);
 
   if (user.balance < amount)
     return msg.reply(
-      `❌ Você não tem Guigacoins suficientes para esse investimento.`
+      `❌ | Você não tem Guigacoins suficientes para esse investimento.`
     );
 
   await removeBalance(userId, amount);
   await addInvested(userId, amount);
 
-  msg.reply(`💼 Você investiu ${amount} Guigacoins!`);
+  msg.reply(`💼 | Você investiu **${amount} Guigacoins**!`);
 }

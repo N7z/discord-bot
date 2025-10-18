@@ -9,11 +9,11 @@ export async function daily(msg: Message) {
 
   const today = now.toISOString().split('T')[0] ?? ''; // YYYY-MM-DD format
   if (user.last_daily === today)
-    return msg.reply('⏳ Você já pegou o daily hoje!');
+    return msg.reply('⏳ | Você já pegou o daily hoje! Volte amanhã.');
 
   const reward = 100;
   await addBalance(userId, reward);
   await updateLastDaily(userId, today);
 
-  msg.reply(`🎁 Você recebeu ${reward} Guigacoins!`);
+  msg.reply(`🎁 | Você recebeu ${reward} Guigacoins!`);
 }
