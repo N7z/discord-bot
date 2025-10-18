@@ -12,9 +12,7 @@ export async function invest(msg: Message) {
 
   const amount = amountStr === 'all' ? user.balance : parseInt(amountStr);
   if (isNaN(amount) || amount <= 0)
-    return msg.reply(
-      `❌ Você precisa especificar um valor válido de Guigacoins.`
-    );
+    return msg.reply(`❌ Você precisa especificar um número ou 'all'.`);
 
   if (user.balance < amount)
     return msg.reply(

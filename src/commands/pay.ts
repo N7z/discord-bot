@@ -18,9 +18,7 @@ export async function pay(msg: Message) {
 
   const amount = amountStr === 'all' ? user.balance : parseInt(amountStr);
   if (isNaN(amount) || amount <= 0)
-    return msg.reply(
-      `❌ Você precisa especificar um valor válido de Guigacoins.`
-    );
+    return msg.reply(`❌ Você precisa especificar um número ou 'all'.`);
 
   if (target.id === userId)
     return msg.reply(`❌ Você não pode enviar Guigacoins para si mesmo.`);
