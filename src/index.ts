@@ -16,7 +16,7 @@ const pkg = JSON.parse(
 
 dotenv.config();
 
-const commands: { [key: string]: (msg: Message) => Promise<void> } = {};
+export const commands: { [key: string]: (msg: Message) => Promise<void> } = {};
 
 async function loadCommands() {
   const commandDir = path.join(__dirname, 'commands');
