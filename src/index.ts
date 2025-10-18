@@ -2,7 +2,7 @@ import { Client, GatewayIntentBits, Message } from 'discord.js';
 import dotenv from 'dotenv';
 import { balance } from './commands/balance.ts';
 import { daily } from './commands/daily.ts';
-import './database.ts';
+import './utils/database.ts';
 
 dotenv.config();
 const client = new Client({
