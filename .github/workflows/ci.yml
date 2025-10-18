@@ -17,9 +17,3 @@ jobs:
       - run: npm ci
       - run: npx tsc --noEmit
       - run: npx eslint . --max-warnings=0
-      - name: Bump version
-        if: github.event_name == 'push' && github.ref == 'refs/heads/main' && !contains(github.event.head_commit.message, 'Bump to')
-        run: |
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          npm version patch --git-commit-message "Bump to %s [skip ci]"
