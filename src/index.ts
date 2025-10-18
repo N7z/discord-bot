@@ -5,6 +5,7 @@ import './utils/database.ts';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
+import 'colors';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -33,20 +34,24 @@ async function loadCommands() {
     if (commandFn) commands[commandName] = commandFn;
   }
 
-  console.log(`[✓] ${files.length} comandos foram carregados com sucesso.`);
+  console.log(
+    ' [✓]'.green,
+    `${files.length} comandos foram carregados com sucesso.`
+  );
 }
 
 async function main() {
   console.clear();
-  console.log(`
+  console.log(
+    `
    ___________         ___.           __   
-  /   _____/  | __ ____\\_ |__   _____/  |_ 
+  /   _____/  | __ ____\\_ |__   _____/  |_ ${pkg.version}
   \\_____  \\|  |/ // __ \\| __ \\ /  _ \\   __\\
   /        \\    <\\  ___/| \\_\\ (  <_> )  |  
  /_______  /__|_ \\\\___  >___  /\\____/|__|  
-          \\/     \\/    \\/    \\/              
-        Version: ${pkg.version}
-  `);
+        \\/     \\/    \\/    \\/              
+  `.magenta
+  );
 
   await loadCommands();
 
@@ -75,7 +80,7 @@ async function main() {
   });
 
   client.once('clientReady', () => {
-    console.log(`[✓] Logado como ${client.user?.tag}`);
+    console.log(' [✓]'.green, `Logado como ${client.user?.tag}`);
 
     setInterval(async () => calculateInvestments(), 60000);
   });
