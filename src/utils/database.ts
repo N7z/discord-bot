@@ -10,24 +10,24 @@ await db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
     balance INTEGER DEFAULT 0,
-    last_daily INTEGER DEFAULT 0
+    last_daily TEXT DEFAULT ''
   )
 `);
 
 export interface User {
   id: string;
   balance: number;
-  last_daily: number;
+  last_daily: string;
 }
 
 export async function getUser(userId: string): Promise<User> {
   let user = await db.get<User>('SELECT * FROM users WHERE id = ?', userId);
   if (!user) {
     await db.run(
-      'INSERT INTO users (id, balance, last_daily) VALUES (?, 0, 0)',
+      "INSERT INTO users (id, balance, last_daily) VALUES (?, 0, '')",
       userId
     );
-    user = { id: userId, balance: 0, last_daily: 0 };
+    user = { id: userId, balance: 0, last_daily: '' };
   }
   return user;
 }
@@ -56,11 +56,11 @@ export async function removeBalance(
 
 export async function updateLastDaily(
   userId: string,
-  timestamp: number
+  dateString: string
 ): Promise<void> {
   await db.run(
     'UPDATE users SET last_daily = ? WHERE id = ?',
-    timestamp,
+    dateString,
     userId
   );
 }

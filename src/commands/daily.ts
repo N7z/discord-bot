@@ -3,17 +3,17 @@ import { Message } from 'discord.js';
 
 export async function daily(msg: Message) {
   const userId = msg.author.id;
-  const now = Date.now();
+  const now = new Date();
 
   const user = await getUser(userId);
 
-  const diff = now - user.last_daily;
-  if (diff < 24 * 60 * 60 * 1000)
+  const today = now.toISOString().split('T')[0] ?? ''; // YYYY-MM-DD format
+  if (user.last_daily === today)
     return msg.reply('⏳ Você já pegou o daily hoje!');
 
   const reward = 100;
   await addBalance(userId, reward);
-  await updateLastDaily(userId, now);
+  await updateLastDaily(userId, today);
 
   msg.reply(`🎁 Você recebeu ${reward} Guigacoins!`);
 }
