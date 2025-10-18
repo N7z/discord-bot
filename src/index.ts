@@ -16,7 +16,12 @@ const pkg = JSON.parse(
 
 dotenv.config();
 
-export const commands: { [key: string]: (msg: Message) => Promise<void> } = {};
+interface CommandMeta {
+  execute: (msg: Message) => Promise<void>;
+  isAdminOnly?: boolean;
+}
+
+export const commands: { [key: string]: CommandMeta } = {};
 
 async function loadCommands() {
   const commandDir = path.join(__dirname, 'commands');
@@ -28,16 +33,19 @@ async function loadCommands() {
     const commandName = path.parse(file).name;
     const commandPath = pathToFileURL(path.join(commandDir, file)).href;
     const commandModule = await import(commandPath);
+
     const commandFn = commandModule[commandName] as
       | ((msg: Message) => Promise<void>)
       | undefined;
 
+    const isAdminOnly: boolean = commandModule.isAdminOnly ?? false;
+
     if (commandFn) {
-      commands[commandName] = commandFn;
+      commands[commandName] = { execute: commandFn, isAdminOnly };
 
       const cmdAliases: string[] = commandModule.aliases ?? [];
       for (const alias of cmdAliases) {
-        commands[alias] = commandFn;
+        commands[alias] = { execute: commandFn, isAdminOnly };
       }
     }
   }
@@ -81,10 +89,19 @@ async function main() {
 
     if (!cmd || !(cmd in commands)) return;
 
-    const command = commands[cmd];
-    if (command) {
-      await command(msg);
+    const commandMeta = commands[cmd];
+
+    if (
+      commandMeta &&
+      commandMeta?.isAdminOnly &&
+      !msg.member?.permissions.has('Administrator')
+    ) {
+      return msg.reply(
+        '❌ | Você precisa ser administrador para usar este comando.'
+      );
     }
+
+    await commandMeta?.execute(msg);
   });
 
   client.once('clientReady', () => {
