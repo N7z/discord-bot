@@ -1,14 +1,17 @@
 import { Client, GatewayIntentBits, Message } from 'discord.js';
+import { calculateInvestments } from './utils/investments.ts';
 import { fileURLToPath, pathToFileURL } from 'url';
 import './utils/database.ts';
 import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 
-import pkg from '../package.json' with { type: 'json' };
-
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+const pkg = JSON.parse(
+  fs.readFileSync(path.join(__dirname, '../package.json'), 'utf-8')
+);
 
 dotenv.config();
 const commands: { [key: string]: (msg: Message) => Promise<void> } = {};
@@ -71,9 +74,11 @@ async function main() {
     }
   });
 
-  client.once('clientReady', () =>
-    console.log(`[✓] Logado como ${client.user?.tag}`)
-  );
+  client.once('clientReady', () => {
+    console.log(`[✓] Logado como ${client.user?.tag}`);
+
+    setInterval(async () => calculateInvestments(), 60000);
+  });
   client.login(process.env.TOKEN);
 }
 
