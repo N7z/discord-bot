@@ -43,6 +43,17 @@ export async function addBalance(
   );
 }
 
+export async function removeBalance(
+  userId: string,
+  amount: number
+): Promise<void> {
+  await db.run(
+    'UPDATE users SET balance = balance - ? WHERE id = ?',
+    amount,
+    userId
+  );
+}
+
 export async function updateLastDaily(
   userId: string,
   timestamp: number
