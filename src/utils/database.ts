@@ -18,7 +18,8 @@ await db.exec(`
     id TEXT PRIMARY KEY,
     balance INTEGER DEFAULT 0,
     invested INTEGER DEFAULT 0,
-    last_daily TEXT DEFAULT ''
+    last_daily TEXT DEFAULT '',
+    last_work INTEGER DEFAULT 0
   )
 `);
 
@@ -29,12 +30,14 @@ await db.exec(`
  * @property {number} balance - User's current balance
  * @property {number} invested - Amount of money invested by the user
  * @property {string} last_daily - Date of the last daily reward
+ * @property {number} last_work - Date of the last work action
  */
 export interface User {
   id: string;
   balance: number;
   invested: number;
   last_daily: string;
+  last_work: number;
 }
 
 /**
@@ -46,10 +49,16 @@ export async function getUser(userId: string): Promise<User> {
   let user = await db.get<User>('SELECT * FROM users WHERE id = ?', userId);
   if (!user) {
     await db.run(
-      "INSERT INTO users (id, balance, invested, last_daily) VALUES (?, 0, 0, '')",
+      "INSERT INTO users (id, balance, invested, last_daily, last_work) VALUES (?, 0, 0, '', 0)",
       userId
     );
-    user = { id: userId, balance: 0, invested: 0, last_daily: '' };
+    user = {
+      id: userId,
+      balance: 0,
+      invested: 0,
+      last_daily: '',
+      last_work: 0,
+    };
   }
   return user;
 }
@@ -137,4 +146,17 @@ export async function updateLastDaily(
     dateString,
     userId
   );
+}
+
+/**
+ * Updates the last work date for a user
+ * @param {string} userId - ID of the user
+ * @param {string} dateString - New last work date
+ * @returns {Promise<void>}
+ */
+export async function updateLastWork(
+  userId: string,
+  date: number
+): Promise<void> {
+  await db.run('UPDATE users SET last_work = ? WHERE id = ?', date, userId);
 }
