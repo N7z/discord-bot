@@ -5,6 +5,8 @@ import dotenv from 'dotenv';
 import path from 'path';
 import fs from 'fs';
 
+import pkg from '../package.json' with { type: 'json' };
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
@@ -27,9 +29,22 @@ async function loadCommands() {
 
     if (commandFn) commands[commandName] = commandFn;
   }
+
+  console.log(`[✓] ${files.length} comandos foram carregados com sucesso.`);
 }
 
 async function main() {
+  console.clear();
+  console.log(`
+   ___________         ___.           __   
+  /   _____/  | __ ____\\_ |__   _____/  |_ 
+  \\_____  \\|  |/ // __ \\| __ \\ /  _ \\   __\\
+  /        \\    <\\  ___/| \\_\\ (  <_> )  |  
+ /_______  /__|_ \\\\___  >___  /\\____/|__|  
+          \\/     \\/    \\/    \\/              
+        Version: ${pkg.version}
+  `);
+
   await loadCommands();
 
   const client = new Client({
@@ -57,7 +72,7 @@ async function main() {
   });
 
   client.once('clientReady', () =>
-    console.log(`✅ Logado como ${client.user?.tag}`)
+    console.log(`[✓] Logado como ${client.user?.tag}`)
   );
   client.login(process.env.TOKEN);
 }
