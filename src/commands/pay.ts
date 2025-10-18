@@ -30,7 +30,7 @@ export async function pay(msg: Message) {
 
   if (user.balance < amount)
     return msg.reply(
-      `❌ Você não tem Guigacoins suficiente para essa transação.`
+      `❌ Você não tem Guigacoins suficientes para essa transação.`
     );
 
   await removeBalance(userId, amount);
