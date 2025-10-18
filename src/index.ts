@@ -79,6 +79,7 @@ async function main() {
 
     setInterval(async () => calculateInvestments(), 60000);
   });
+
   client.login(process.env.TOKEN);
 }
 
