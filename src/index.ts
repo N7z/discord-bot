@@ -15,6 +15,7 @@ const pkg = JSON.parse(
 );
 
 dotenv.config();
+
 const commands: { [key: string]: (msg: Message) => Promise<void> } = {};
 
 async function loadCommands() {
@@ -31,7 +32,14 @@ async function loadCommands() {
       | ((msg: Message) => Promise<void>)
       | undefined;
 
-    if (commandFn) commands[commandName] = commandFn;
+    if (commandFn) {
+      commands[commandName] = commandFn;
+
+      const cmdAliases: string[] = commandModule.aliases ?? [];
+      for (const alias of cmdAliases) {
+        commands[alias] = commandFn;
+      }
+    }
   }
 
   console.log(

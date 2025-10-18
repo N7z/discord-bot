@@ -1,6 +1,8 @@
 import { getUser, addBalance, updateLastDaily } from '../utils/database.ts';
 import { Message } from 'discord.js';
 
+export const aliases: string[] = ['diario'];
+
 export async function daily(msg: Message) {
   const userId = msg.author.id;
   const now = new Date();

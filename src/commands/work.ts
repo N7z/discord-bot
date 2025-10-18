@@ -1,6 +1,8 @@
 import { getUser, addBalance, updateLastWork } from '../utils/database.ts';
 import { Message } from 'discord.js';
 
+export const aliases: string[] = ['trabalhar', 'job', 'bakarajo'];
+
 export async function work(msg: Message) {
   const userId = msg.author.id;
   const now = Date.now();

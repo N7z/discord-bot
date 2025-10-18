@@ -1,6 +1,8 @@
 import { getUser, addBalance, removeBalance } from '../utils/database.ts';
 import { Message } from 'discord.js';
 
+export const aliases: string[] = ['pagar', 'enviar', 'pix', 'transferir'];
+
 export async function pay(msg: Message) {
   const userId = msg.author.id;
   const user = await getUser(userId);
