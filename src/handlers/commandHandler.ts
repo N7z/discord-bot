@@ -5,7 +5,11 @@ import { pathToFileURL } from 'url';
 import 'colors';
 import type { CommandMeta } from '../types/index.ts';
 
-export const commands: Record<string, CommandMeta> = {};
+export interface CommandMetaExtended extends CommandMeta {
+  filePath: string;
+}
+
+export const commands: Record<string, CommandMetaExtended> = {};
 export const commandFiles: string[] = [];
 
 async function loadCommandFile(filePath: string) {
@@ -18,11 +22,11 @@ async function loadCommandFile(filePath: string) {
 
   if (!execute) return;
 
-  commands[commandName] = { execute, isAdminOnly };
+  commands[commandName] = { execute, isAdminOnly, filePath };
   commandFiles.push(commandName);
 
   for (const alias of aliases) {
-    commands[alias] = { execute, isAdminOnly };
+    commands[alias] = { execute, isAdminOnly, filePath };
   }
 }
 
@@ -33,7 +37,7 @@ async function walkDir(dir: string) {
     const stats = fs.statSync(fullPath);
 
     if (stats.isDirectory()) {
-      await walkDir(fullPath); // recursivo
+      await walkDir(fullPath);
     } else if (file.endsWith('.ts')) {
       await loadCommandFile(fullPath);
     }
