@@ -24,6 +24,32 @@ await db.exec(`
 `);
 
 /**
+ * Creates the 'profiles' table if it doesn't exist
+ */
+await db.exec(`
+  CREATE TABLE IF NOT EXISTS profiles (
+    user_id TEXT PRIMARY KEY,
+    bio TEXT DEFAULT '',
+    bg_color TEXT DEFAULT '#2c2f33',
+    bg_image TEXT DEFAULT '',
+    FOREIGN KEY (user_id) REFERENCES users(id)
+  )
+`);
+
+/**
+ * Represents a user's profile in the database
+ * @typedef {Object} Profile
+ * @property {string} bio - User's profile biography
+ * @property {string} bg_color - User's profile background color
+ * @property {string} bg_image - User's profile image background
+ */
+export interface Profile {
+  bio: string;
+  bg_color: string;
+  bg_image?: string;
+}
+
+/**
  * Represents a user in the database
  * @typedef {Object} User
  * @property {string} id - Unique identifier for the user
@@ -38,6 +64,7 @@ export interface User {
   invested: number;
   last_daily: string;
   last_work: number;
+  profile: Profile;
 }
 
 /**
@@ -46,7 +73,7 @@ export interface User {
  * @returns {Promise<User>} The user object
  */
 export async function getUser(userId: string): Promise<User> {
-  let user = await db.get<User>('SELECT * FROM users WHERE id = ?', userId);
+  let user = await db.get('SELECT * FROM users WHERE id = ?', userId);
   if (!user) {
     await db.run(
       "INSERT INTO users (id, balance, invested, last_daily, last_work) VALUES (?, 0, 0, '', 0)",
@@ -60,7 +87,24 @@ export async function getUser(userId: string): Promise<User> {
       last_work: 0,
     };
   }
-  return user;
+
+  let profile = await db.get(
+    'SELECT * FROM profiles WHERE user_id = ?',
+    userId
+  );
+  if (!profile) {
+    await db.run(
+      "INSERT INTO profiles (user_id, bio, bg_color, bg_image) VALUES (?, '', '#2c2f33', '')",
+      userId
+    );
+    profile = {
+      bio: '',
+      bg_color: '#2c2f33',
+      bg_image: '',
+    };
+  }
+
+  return { ...user, profile };
 }
 
 /**
@@ -167,4 +211,46 @@ export async function updateLastWork(
   date: number
 ): Promise<void> {
   await db.run('UPDATE users SET last_work = ? WHERE id = ?', date, userId);
+}
+
+/**
+ * Updates the biography for a user profile
+ * @param {string} userId - ID of the user
+ * @param {string} newBio - New user bio
+ * @returns {Promise<void>}
+ */
+export async function updateBio(userId: string, newBio: string): Promise<void> {
+  await db.run('UPDATE profiles SET bio = ? WHERE user_id = ?', newBio, userId);
+}
+
+/**
+ * Updates the background color for a user's profile
+ * @param {string} userId - ID of the user
+ * @param {string} newColor - New background color (HEX or name)
+ */
+export async function updateBgColor(
+  userId: string,
+  newColor: string
+): Promise<void> {
+  await db.run(
+    'UPDATE profiles SET bg_color = ? WHERE user_id = ?',
+    newColor,
+    userId
+  );
+}
+
+/**
+ * Updates the background image URL for a user's profile
+ * @param {string} userId - ID of the user
+ * @param {string} imageUrl - New background image URL
+ */
+export async function updateBgImage(
+  userId: string,
+  imageUrl: string
+): Promise<void> {
+  await db.run(
+    'UPDATE profiles SET bg_image = ? WHERE user_id = ?',
+    imageUrl,
+    userId
+  );
 }
