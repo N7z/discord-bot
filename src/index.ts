@@ -16,7 +16,7 @@ const pkg = JSON.parse(
 
 dotenv.config();
 
-interface CommandMeta {
+export interface CommandMeta {
   execute: (msg: Message) => Promise<void>;
   isAdminOnly?: boolean;
 }

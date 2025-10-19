@@ -1,10 +1,10 @@
 import { Message } from 'discord.js';
-import { commands } from '../index.ts';
+import { commands, type CommandMeta } from '../index.ts';
 
 export const aliases: string[] = ['ajuda', 'comandos'];
 
 export async function help(msg: Message) {
-  const seen = new Set<(msg: Message) => Promise<void>>();
+  const seen = new Set<CommandMeta>();
   const commandList: string[] = [];
 
   for (const cmdName in commands) {
