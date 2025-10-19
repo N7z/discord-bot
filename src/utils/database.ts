@@ -64,6 +64,14 @@ export async function getUser(userId: string): Promise<User> {
 }
 
 /**
+ * Returns all users in the db
+ * @returns {Promise<User[]>}
+ */
+export async function getAllUsers(): Promise<User[]> {
+  return await db.all('SELECT * FROM users');
+}
+
+/**
  * Adds invested money to a user's account
  * @param {string} userId - ID of the user
  * @param {number} amount - Amount to add to invested
