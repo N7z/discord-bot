@@ -14,7 +14,7 @@ export async function help(msg: Message) {
     const parts = path
       .relative(path.join(process.cwd(), 'src/commands'), cmd.filePath)
       .split(path.sep);
-    const type = (parts.length > 1 ? parts[0] : 'Geral') || '';
+    const type = (parts.length > 1 ? parts[0] : 'geral') || '';
 
     if (!grouped[type]) grouped[type] = [];
     grouped[type].push(cmdName);
@@ -24,7 +24,9 @@ export async function help(msg: Message) {
   for (const type in grouped) {
     if (type === 'admin') continue;
 
-    replyMsg += `\n**${type}**\n`;
+    const typeText = type.charAt(0).toUpperCase() + type.slice(1);
+
+    replyMsg += `\n**${typeText}**\n`;
     for (const cmdName of grouped[type] || []) {
       replyMsg += `- !${cmdName}\n`;
     }
