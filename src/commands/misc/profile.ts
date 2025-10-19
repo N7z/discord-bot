@@ -145,7 +145,7 @@ export async function profile(msg: Message) {
     });
 
     await statusMessage.edit({
-      content: `🖼️ **Perfil de ${targetUser.displayName}**`,
+      content: `🖼️ **Perfil de ${targetUser.displayName}** *(use !edit para editar)*`,
       files: [attachment],
     });
   } catch (error) {
