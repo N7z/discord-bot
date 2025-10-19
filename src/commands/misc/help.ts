@@ -1,6 +1,6 @@
 import { Message } from 'discord.js';
-import { commands } from '../handlers/commandHandler.ts';
-import type { CommandMeta } from '../types/index.ts';
+import { commands } from '../../handlers/commandHandler.ts';
+import type { CommandMeta } from '../../types/index.ts';
 
 export const aliases: string[] = ['ajuda', 'comandos'];
 

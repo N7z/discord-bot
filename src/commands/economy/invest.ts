@@ -1,4 +1,4 @@
-import { getUser, removeBalance, addInvested } from '../utils/database.ts';
+import { getUser, removeBalance, addInvested } from '../../utils/database.ts';
 import { Message } from 'discord.js';
 
 export const aliases: string[] = ['investir'];

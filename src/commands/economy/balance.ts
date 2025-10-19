@@ -1,5 +1,5 @@
-import { getUser } from '../utils/database.ts';
 import { Message } from 'discord.js';
+import { getUser } from '../../utils/database.ts';
 
 export const aliases: string[] = ['bal', 'saldo', 'carteira'];
 
