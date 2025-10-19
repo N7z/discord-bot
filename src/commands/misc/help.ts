@@ -1,22 +1,34 @@
 import { Message } from 'discord.js';
-import { commands } from '../../handlers/commandHandler.ts';
-import type { CommandMeta } from '../../types/index.ts';
+import { commands, commandFiles } from '../../handlers/commandHandler.ts';
+import path from 'path';
 
 export const aliases: string[] = ['ajuda', 'comandos'];
 
 export async function help(msg: Message) {
-  const seen = new Set<CommandMeta>();
-  const commandList: string[] = [];
+  const grouped: Record<string, string[]> = {};
 
-  for (const cmdName in commands) {
-    const cmdFn = commands[cmdName];
-    if (!cmdFn) continue;
+  for (const cmdName of commandFiles) {
+    const cmd = commands[cmdName];
+    if (!cmd) continue;
 
-    if (!seen.has(cmdFn)) {
-      seen.add(cmdFn);
-      commandList.push(`- ${cmdName}`);
+    const parts = path
+      .relative(path.join(process.cwd(), 'src/commands'), cmd.filePath)
+      .split(path.sep);
+    const type = (parts.length > 1 ? parts[0] : 'Geral') || '';
+
+    if (!grouped[type]) grouped[type] = [];
+    grouped[type].push(cmdName);
+  }
+
+  let replyMsg = '📜 | Lista de comandos disponíveis:\n';
+  for (const type in grouped) {
+    if (type === 'admin') continue;
+
+    replyMsg += `\n**${type}**\n`;
+    for (const cmdName of grouped[type] || []) {
+      replyMsg += `- !${cmdName}\n`;
     }
   }
 
-  msg.reply(`📜 | Lista de comandos disponíveis:\n${commandList.join('\n')}`);
+  msg.reply(replyMsg);
 }
