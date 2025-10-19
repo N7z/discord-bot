@@ -50,7 +50,7 @@ const STYLES = {
     maxWidth: 330,
     lineHeight: 25,
     font: '20px Sans',
-    color: '#ddd',
+    color: '#ecececff',
     stroke: '#000',
     strokeWidth: 2,
     shadow: 'rgba(0,0,0,0.4)',
