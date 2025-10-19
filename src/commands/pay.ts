@@ -25,6 +25,9 @@ export async function pay(msg: Message) {
   if (target.id === userId)
     return msg.reply(`❌ | Você não pode enviar Guigacoins para si mesmo.`);
 
+  if (target.user.bot)
+    return msg.reply(`❌ | Você não pode enviar Guigacoins para bots.`);
+
   // Caso usuário ainda não seja cadastrado, isso vai cadastrar ele no db
   await getUser(target.id);
 
