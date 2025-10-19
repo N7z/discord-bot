@@ -3,7 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import { pathToFileURL } from 'url';
 import 'colors';
-import type { CommandMeta } from '../utils/types.ts';
+import type { CommandMeta } from '../types/index.ts';
 
 export const commands: Record<string, CommandMeta> = {};
 
