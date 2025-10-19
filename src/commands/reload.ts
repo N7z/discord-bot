@@ -4,7 +4,7 @@ import path from 'path';
 import fs from 'fs';
 import 'colors';
 
-import { commands } from '../index.ts';
+import { commands } from '../handlers/commandHandler.ts';
 
 export const aliases: string[] = ['rl', 'refresh'];
 export const isAdminOnly = true;
