@@ -20,10 +20,11 @@ export async function leaderboard(msg: Message) {
     if (!u) continue;
 
     const member = await msg.guild?.members.fetch(u.id).catch(() => null);
-    const name = member?.user.username || `Usuário ${u.id}`;
-    leaderboard += `**${i + 1}.** ${name} — 💰 ${u.balance} | 🏦 ${
-      u.invested
-    }\n`;
+    const name =
+      member?.user.displayName || member?.user.username || `Usuário ${u.id}`;
+
+    // prettier-ignore
+    leaderboard += `**${i + 1}.** ${name} — 💰 ${u.balance.toLocaleString('pt-BR')} | 🏦 ${u.invested.toLocaleString('pt-BR')}\n`;
   }
 
   await message.edit(leaderboard);
