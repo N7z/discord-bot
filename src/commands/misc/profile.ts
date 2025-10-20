@@ -35,7 +35,7 @@ const STYLES = {
     strokeWidth: 2,
     shadow: 'rgba(0,0,0,0.4)',
   },
-  invested: {
+  bank: {
     x: 350,
     y: 100,
     font: '20px Sans',
@@ -87,8 +87,50 @@ export async function profile(msg: Message) {
       CANVAS_CONFIG.HEIGHT
     );
 
+    if (userData.starting_claimed) {
+      ctx.save();
+      const bx = 435;
+      const by = 20;
+      const bw = 150;
+      const bh = 22;
+      const r = 8;
+      ctx.beginPath();
+      ctx.moveTo(bx + r, by);
+      ctx.lineTo(bx + bw - r, by);
+      ctx.quadraticCurveTo(bx + bw, by, bx + bw, by + r);
+      ctx.lineTo(bx + bw, by + bh - r);
+      ctx.quadraticCurveTo(bx + bw, by + bh, bx + bw - r, by + bh);
+      ctx.lineTo(bx + r, by + bh);
+      ctx.quadraticCurveTo(bx, by + bh, bx, by + bh - r);
+      ctx.lineTo(bx, by + r);
+      ctx.quadraticCurveTo(bx, by, bx + r, by);
+      ctx.closePath();
+      ctx.fillStyle = '#1aa34a';
+      ctx.globalAlpha = 0.9;
+      ctx.fill();
+      ctx.globalAlpha = 1;
+      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#0e572b';
+      ctx.stroke();
+
+      ctx.font = 'bold 14px Sans';
+      ctx.fillStyle = '#ffffff';
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 2;
+      ctx.textBaseline = 'middle';
+      const text = '✅ Bolsa Família';
+      const tx = bx + 14;
+      const ty = by + bh / 2;
+      ctx.shadowColor = 'rgba(0,0,0,0.35)';
+      ctx.shadowBlur = 2;
+      ctx.strokeText(text, tx, ty);
+      ctx.shadowBlur = 0;
+      ctx.fillText(text, tx, ty);
+      ctx.restore();
+    }
+
     // Desenha textos
-    const { username, balance, invested, bio } = STYLES;
+    const { username, balance, bank, bio } = STYLES;
 
     drawText(
       ctx,
@@ -116,14 +158,14 @@ export async function profile(msg: Message) {
 
     drawText(
       ctx,
-      `🏦 ${userData.invested.toLocaleString('pt-BR')}`,
-      invested.x,
-      invested.y,
-      invested.font,
-      invested.color,
-      invested.stroke,
-      invested.strokeWidth,
-      invested.shadow
+      `🏦 ${userData.bank.toLocaleString('pt-BR')}`,
+      bank.x,
+      bank.y,
+      bank.font,
+      bank.color,
+      bank.stroke,
+      bank.strokeWidth,
+      bank.shadow
     );
 
     drawWrappedText(

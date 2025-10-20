@@ -11,7 +11,7 @@ export async function leaderboard(msg: Message) {
     return msg.reply('❌ | Nenhum usuário encontrado no ranking.');
 
   const sorted = users
-    .sort((a, b) => b.balance + b.invested - (a.balance + a.invested))
+    .sort((a, b) => b.balance + b.bank - (a.balance + a.bank))
     .slice(0, 10);
 
   let leaderboard = '🏆 **Top 10 Mais Ricos** 🏆\n\n';
@@ -24,7 +24,7 @@ export async function leaderboard(msg: Message) {
       member?.user.displayName || member?.user.username || `Usuário ${u.id}`;
 
     // prettier-ignore
-    leaderboard += `**${i + 1}.** ${name} — 💰 ${u.balance.toLocaleString('pt-BR')} | 🏦 ${u.invested.toLocaleString('pt-BR')}\n`;
+    leaderboard += `**${i + 1}.** ${name} — 💰 ${u.balance.toLocaleString('pt-BR')} | 🏦 ${u.bank.toLocaleString('pt-BR')}` + "\n";
   }
 
   await message.edit(leaderboard);

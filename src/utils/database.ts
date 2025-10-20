@@ -17,9 +17,10 @@ await db.exec(`
   CREATE TABLE IF NOT EXISTS users (
     id TEXT PRIMARY KEY,
     balance INTEGER DEFAULT 0,
-    invested INTEGER DEFAULT 0,
+    bank INTEGER DEFAULT 0,
     last_daily TEXT DEFAULT '',
-    last_work INTEGER DEFAULT 0
+    last_work INTEGER DEFAULT 0,
+    starting_claimed INTEGER DEFAULT 0
   )
 `);
 
@@ -54,16 +55,18 @@ export interface Profile {
  * @typedef {Object} User
  * @property {string} id - Unique identifier for the user
  * @property {number} balance - User's current balance
- * @property {number} invested - Amount of money invested by the user
+ * @property {number} bank - Amount of money in the bank
  * @property {string} last_daily - Date of the last daily reward
  * @property {number} last_work - Date of the last work action
+ * @property {number} starting_claimed - Whether the user has claimed the starting aid
  */
 export interface User {
   id: string;
   balance: number;
-  invested: number;
+  bank: number;
   last_daily: string;
   last_work: number;
+  starting_claimed: number;
   profile: Profile;
 }
 
@@ -76,15 +79,16 @@ export async function getUser(userId: string): Promise<User> {
   let user = await db.get('SELECT * FROM users WHERE id = ?', userId);
   if (!user) {
     await db.run(
-      "INSERT INTO users (id, balance, invested, last_daily, last_work) VALUES (?, 0, 0, '', 0)",
+      "INSERT INTO users (id, balance, bank, last_daily, last_work) VALUES (?, 0, 0, '', 0)",
       userId
     );
     user = {
       id: userId,
       balance: 0,
-      invested: 0,
+      bank: 0,
       last_daily: '',
       last_work: 0,
+      starting_claimed: 0,
     };
   }
 
@@ -116,37 +120,26 @@ export async function getAllUsers(): Promise<User[]> {
 }
 
 /**
- * Adds invested money to a user's account
+ * Adds money to a user's bank balance
  * @param {string} userId - ID of the user
- * @param {number} amount - Amount to add to invested
+ * @param {number} amount - Amount to add to bank
  * @returns {Promise<void>}
  */
-export async function addInvested(
-  userId: string,
-  amount: number
-): Promise<void> {
-  await db.run(
-    'UPDATE users SET invested = invested + ? WHERE id = ?',
-    amount,
-    userId
-  );
+export async function addBank(userId: string, amount: number): Promise<void> {
+  await db.run('UPDATE users SET bank = bank + ? WHERE id = ?', amount, userId);
 }
 
 /**
- * Removes invested money from a user's account
+ * Removes money from a user's bank balance
  * @param {string} userId - ID of the user
- * @param {number} amount - Amount to remove from invested
+ * @param {number} amount - Amount to remove from bank
  * @returns {Promise<void>}
  */
-export async function removeInvested(
+export async function removeBank(
   userId: string,
   amount: number
 ): Promise<void> {
-  await db.run(
-    'UPDATE users SET invested = invested - ? WHERE id = ?',
-    amount,
-    userId
-  );
+  await db.run('UPDATE users SET bank = bank - ? WHERE id = ?', amount, userId);
 }
 
 /**
@@ -253,4 +246,25 @@ export async function updateBgImage(
     imageUrl,
     userId
   );
+}
+
+/**
+ * Checks if the user has already claimed the starting aid
+ * @param {string} userId - ID of the user
+ * @returns {Promise<boolean>} True if already claimed
+ */
+export async function hasStartingClaimed(userId: string): Promise<boolean> {
+  const row = await db.get(
+    'SELECT starting_claimed AS claimed FROM users WHERE id = ? ',
+    userId
+  );
+  return !!row?.claimed;
+}
+
+/**
+ * Marks the user as having claimed the starting aid
+ * @param {string} userId - ID of the user
+ */
+export async function setStartingClaimed(userId: string): Promise<void> {
+  await db.run('UPDATE users SET starting_claimed = 1 WHERE id = ?', userId);
 }

@@ -1,9 +1,9 @@
-import { getUser, removeBalance, addInvested } from '../../utils/database.ts';
+import { getUser, removeBalance, addBank } from '../../utils/database.ts';
 import { Message } from 'discord.js';
 
-export const aliases: string[] = ['investir'];
+export const aliases: string[] = ['depositar', 'dep', 'investir'];
 
-export async function invest(msg: Message) {
+export async function deposit(msg: Message) {
   const userId = msg.author.id;
   const user = await getUser(userId);
 
@@ -18,11 +18,11 @@ export async function invest(msg: Message) {
 
   if (user.balance < amount)
     return msg.reply(
-      `❌ | Você não tem Guigacoins suficientes para esse investimento.`
+      `❌ | Você não tem Guigacoins suficientes na carteira para depositar.`
     );
 
   await removeBalance(userId, amount);
-  await addInvested(userId, amount);
+  await addBank(userId, amount);
 
-  msg.reply(`💼 | Você investiu **${amount} Guigacoins**!`);
+  msg.reply(`🏦 | Você depositou **${amount} Guigacoins** no banco!`);
 }
