@@ -17,5 +17,5 @@ export async function daily(msg: Message) {
   await addBalance(userId, reward);
   await updateLastDaily(userId, today);
 
-  msg.reply(`🎁 | Você recebeu ${reward} Guigacoins!`);
+  msg.reply(`🎁 | Você recebeu **${reward} Guigacoins**!`);
 }
