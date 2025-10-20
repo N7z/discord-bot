@@ -22,4 +22,15 @@ export async function runMigrations(db: Database<sqlite3.Database, sqlite3.State
       FOREIGN KEY (user_id) REFERENCES users(id)
     )
   `);
+
+  await db.exec(`
+    CREATE TABLE IF NOT EXISTS warnings (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      user_id TEXT NOT NULL,
+      moderator_id TEXT NOT NULL,
+      reason TEXT NOT NULL,
+      created_at INTEGER NOT NULL,
+      FOREIGN KEY (user_id) REFERENCES users(id)
+    )
+  `);
 }
