@@ -30,23 +30,38 @@ export async function addBank(userId: string, amount: number): Promise<void> {
   return _addBank(userId, amount);
 }
 
-export async function removeBank(userId: string, amount: number): Promise<void> {
+export async function removeBank(
+  userId: string,
+  amount: number
+): Promise<void> {
   return _removeBank(userId, amount);
 }
 
-export async function addBalance(userId: string, amount: number): Promise<void> {
+export async function addBalance(
+  userId: string,
+  amount: number
+): Promise<void> {
   return _addBalance(userId, amount);
 }
 
-export async function removeBalance(userId: string, amount: number): Promise<void> {
+export async function removeBalance(
+  userId: string,
+  amount: number
+): Promise<void> {
   return _removeBalance(userId, amount);
 }
 
-export async function updateLastDaily(userId: string, dateString: string): Promise<void> {
+export async function updateLastDaily(
+  userId: string,
+  dateString: string
+): Promise<void> {
   return _updateLastDaily(userId, dateString);
 }
 
-export async function updateLastWork(userId: string, date: number): Promise<void> {
+export async function updateLastWork(
+  userId: string,
+  date: number
+): Promise<void> {
   return _updateLastWork(userId, date);
 }
 
@@ -54,11 +69,17 @@ export async function updateBio(userId: string, newBio: string): Promise<void> {
   return _updateBio(userId, newBio);
 }
 
-export async function updateBgColor(userId: string, newColor: string): Promise<void> {
+export async function updateBgColor(
+  userId: string,
+  newColor: string
+): Promise<void> {
   return _updateBgColor(userId, newColor);
 }
 
-export async function updateBgImage(userId: string, imageUrl: string): Promise<void> {
+export async function updateBgImage(
+  userId: string,
+  imageUrl: string
+): Promise<void> {
   return _updateBgImage(userId, imageUrl);
 }
 

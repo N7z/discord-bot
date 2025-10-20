@@ -1,7 +1,9 @@
 import type sqlite3 from 'sqlite3';
 import type { Database } from 'sqlite';
 
-export async function runMigrations(db: Database<sqlite3.Database, sqlite3.Statement>) {
+export async function runMigrations(
+  db: Database<sqlite3.Database, sqlite3.Statement>
+) {
   await db.exec(`
     CREATE TABLE IF NOT EXISTS users (
       id TEXT PRIMARY KEY,

@@ -1,13 +1,12 @@
 import { Message } from 'discord.js';
 import { getWarnings } from '../../repositories/warningsRepo.ts';
 
-export const aliases: string[] = [];
+export const aliases: string[] = ['avisos'];
 export const isAdminOnly = true;
 
 export async function warns(msg: Message) {
   const target = msg.mentions.users.first();
-  if (!target)
-    return msg.reply('❌ | Use: `!warns @user`');
+  if (!target) return msg.reply('❌ | Use: `!warns @user`');
 
   const warns = await getWarnings(target.id);
   if (!warns || warns.length === 0)

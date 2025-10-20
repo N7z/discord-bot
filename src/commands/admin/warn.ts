@@ -2,7 +2,7 @@ import { Message } from 'discord.js';
 import { addWarning } from '../../repositories/warningsRepo.ts';
 import { getUser } from '../../utils/database.ts';
 
-export const aliases: string[] = [];
+export const aliases: string[] = ['avisar'];
 export const isAdminOnly = true;
 
 export async function warn(msg: Message) {

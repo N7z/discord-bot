@@ -8,7 +8,11 @@ export interface WarningRecord {
   created_at: number;
 }
 
-export async function addWarning(userId: string, moderatorId: string, reason: string): Promise<void> {
+export async function addWarning(
+  userId: string,
+  moderatorId: string,
+  reason: string
+): Promise<void> {
   const db = getDb();
   const ts = Date.now();
   await db.run(
