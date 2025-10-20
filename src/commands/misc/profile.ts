@@ -87,6 +87,46 @@ export async function profile(msg: Message) {
       CANVAS_CONFIG.HEIGHT
     );
 
+    // Draw daily streak (top-left) if active (claimed today or yesterday)
+    {
+      const now = new Date();
+      const today = now.toISOString().split('T')[0] ?? '';
+      const [lastDateRaw, lastStreakRaw] = (userData.last_daily || '').split(
+        '|'
+      ); // YYYY-MM-DD|streak
+      const lastDate = lastDateRaw || '';
+      const baseStreak =
+        Number.isFinite(Number(lastStreakRaw)) && Number(lastStreakRaw) > 0
+          ? Number(lastStreakRaw)
+          : lastDate
+          ? 1
+          : 0;
+
+      const yesterdayDate = new Date(
+        Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), now.getUTCDate() - 1)
+      );
+      const yesterday = yesterdayDate.toISOString().split('T')[0];
+
+      const displayStreak =
+        lastDate === today || lastDate === yesterday ? baseStreak : 0;
+
+      if (displayStreak > 0) {
+        const label = `🔥 ${displayStreak}`;
+        ctx.save();
+        ctx.font = 'bold 18px Sans';
+        ctx.textBaseline = 'top';
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = '#000000';
+        ctx.shadowColor = 'rgba(0,0,0,0.35)';
+        ctx.shadowBlur = 2;
+        ctx.strokeText(label, 25, 10);
+        ctx.shadowBlur = 0;
+        ctx.fillStyle = '#ffa500';
+        ctx.fillText(label, 25, 10);
+        ctx.restore();
+      }
+    }
+
     if (userData.starting_claimed) {
       ctx.save();
       const bx = 435;
