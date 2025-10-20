@@ -1,270 +1,71 @@
-import sqlite3 from 'sqlite3';
-import { open } from 'sqlite';
+import type { User } from '../types/database.ts';
+import {
+  getAllUserRows,
+  addBank as _addBank,
+  removeBank as _removeBank,
+  addBalance as _addBalance,
+  removeBalance as _removeBalance,
+  updateLastDaily as _updateLastDaily,
+  updateLastWork as _updateLastWork,
+  hasStartingClaimed as _hasStartingClaimed,
+  setStartingClaimed as _setStartingClaimed,
+} from '../repositories/usersRepo.ts';
+import {
+  updateBio as _updateBio,
+  updateBgColor as _updateBgColor,
+  updateBgImage as _updateBgImage,
+} from '../repositories/profilesRepo.ts';
+import { getOrCreateUserWithProfile } from '../services/userService.ts';
+export { initDatabase } from '../database/connection.ts';
 
-/**
- * Opens the SQLite database connection
- * @type {import('sqlite').Database}
- */
-export const db = await open({
-  filename: './database.sqlite',
-  driver: sqlite3.Database,
-});
-
-/**
- * Creates the 'users' table if it doesn't exist
- */
-await db.exec(`
-  CREATE TABLE IF NOT EXISTS users (
-    id TEXT PRIMARY KEY,
-    balance INTEGER DEFAULT 0,
-    bank INTEGER DEFAULT 0,
-    last_daily TEXT DEFAULT '',
-    last_work INTEGER DEFAULT 0,
-    starting_claimed INTEGER DEFAULT 0
-  )
-`);
-
-/**
- * Creates the 'profiles' table if it doesn't exist
- */
-await db.exec(`
-  CREATE TABLE IF NOT EXISTS profiles (
-    user_id TEXT PRIMARY KEY,
-    bio TEXT DEFAULT '',
-    bg_color TEXT DEFAULT '#2c2f33',
-    bg_image TEXT DEFAULT '',
-    FOREIGN KEY (user_id) REFERENCES users(id)
-  )
-`);
-
-/**
- * Represents a user's profile in the database
- * @typedef {Object} Profile
- * @property {string} bio - User's profile biography
- * @property {string} bg_color - User's profile background color
- * @property {string} bg_image - User's profile image background
- */
-export interface Profile {
-  bio: string;
-  bg_color: string;
-  bg_image?: string;
-}
-
-/**
- * Represents a user in the database
- * @typedef {Object} User
- * @property {string} id - Unique identifier for the user
- * @property {number} balance - User's current balance
- * @property {number} bank - Amount of money in the bank
- * @property {string} last_daily - Date of the last daily reward
- * @property {number} last_work - Date of the last work action
- * @property {number} starting_claimed - Whether the user has claimed the starting aid
- */
-export interface User {
-  id: string;
-  balance: number;
-  bank: number;
-  last_daily: string;
-  last_work: number;
-  starting_claimed: number;
-  profile: Profile;
-}
-
-/**
- * Retrieves a user from the database or creates a new one if it doesn't exist
- * @param {string} userId - ID of the user
- * @returns {Promise<User>} The user object
- */
 export async function getUser(userId: string): Promise<User> {
-  let user = await db.get('SELECT * FROM users WHERE id = ?', userId);
-  if (!user) {
-    await db.run(
-      "INSERT INTO users (id, balance, bank, last_daily, last_work) VALUES (?, 0, 0, '', 0)",
-      userId
-    );
-    user = {
-      id: userId,
-      balance: 0,
-      bank: 0,
-      last_daily: '',
-      last_work: 0,
-      starting_claimed: 0,
-    };
-  }
-
-  let profile = await db.get(
-    'SELECT * FROM profiles WHERE user_id = ?',
-    userId
-  );
-  if (!profile) {
-    await db.run(
-      "INSERT INTO profiles (user_id, bio, bg_color, bg_image) VALUES (?, '', '#2c2f33', '')",
-      userId
-    );
-    profile = {
-      bio: '',
-      bg_color: '#2c2f33',
-      bg_image: '',
-    };
-  }
-
-  return { ...user, profile };
+  return getOrCreateUserWithProfile(userId);
 }
 
-/**
- * Returns all users in the db
- * @returns {Promise<User[]>}
- */
-export async function getAllUsers(): Promise<User[]> {
-  return await db.all('SELECT * FROM users');
+export async function getAllUsers() {
+  return getAllUserRows();
 }
 
-/**
- * Adds money to a user's bank balance
- * @param {string} userId - ID of the user
- * @param {number} amount - Amount to add to bank
- * @returns {Promise<void>}
- */
 export async function addBank(userId: string, amount: number): Promise<void> {
-  await db.run('UPDATE users SET bank = bank + ? WHERE id = ?', amount, userId);
+  return _addBank(userId, amount);
 }
 
-/**
- * Removes money from a user's bank balance
- * @param {string} userId - ID of the user
- * @param {number} amount - Amount to remove from bank
- * @returns {Promise<void>}
- */
-export async function removeBank(
-  userId: string,
-  amount: number
-): Promise<void> {
-  await db.run('UPDATE users SET bank = bank - ? WHERE id = ?', amount, userId);
+export async function removeBank(userId: string, amount: number): Promise<void> {
+  return _removeBank(userId, amount);
 }
 
-/**
- * Adds money to a user's balance
- * @param {string} userId - ID of the user
- * @param {number} amount - Amount to add to balance
- * @returns {Promise<void>}
- */
-export async function addBalance(
-  userId: string,
-  amount: number
-): Promise<void> {
-  await db.run(
-    'UPDATE users SET balance = balance + ? WHERE id = ?',
-    amount,
-    userId
-  );
+export async function addBalance(userId: string, amount: number): Promise<void> {
+  return _addBalance(userId, amount);
 }
 
-/**
- * Removes money from a user's balance
- * @param {string} userId - ID of the user
- * @param {number} amount - Amount to remove from balance
- * @returns {Promise<void>}
- */
-export async function removeBalance(
-  userId: string,
-  amount: number
-): Promise<void> {
-  await db.run(
-    'UPDATE users SET balance = balance - ? WHERE id = ?',
-    amount,
-    userId
-  );
+export async function removeBalance(userId: string, amount: number): Promise<void> {
+  return _removeBalance(userId, amount);
 }
 
-/**
- * Updates the last daily reward date for a user
- * @param {string} userId - ID of the user
- * @param {string} dateString - New last daily date
- * @returns {Promise<void>}
- */
-export async function updateLastDaily(
-  userId: string,
-  dateString: string
-): Promise<void> {
-  await db.run(
-    'UPDATE users SET last_daily = ? WHERE id = ?',
-    dateString,
-    userId
-  );
+export async function updateLastDaily(userId: string, dateString: string): Promise<void> {
+  return _updateLastDaily(userId, dateString);
 }
 
-/**
- * Updates the last work date for a user
- * @param {string} userId - ID of the user
- * @param {string} dateString - New last work date
- * @returns {Promise<void>}
- */
-export async function updateLastWork(
-  userId: string,
-  date: number
-): Promise<void> {
-  await db.run('UPDATE users SET last_work = ? WHERE id = ?', date, userId);
+export async function updateLastWork(userId: string, date: number): Promise<void> {
+  return _updateLastWork(userId, date);
 }
 
-/**
- * Updates the biography for a user profile
- * @param {string} userId - ID of the user
- * @param {string} newBio - New user bio
- * @returns {Promise<void>}
- */
 export async function updateBio(userId: string, newBio: string): Promise<void> {
-  await db.run('UPDATE profiles SET bio = ? WHERE user_id = ?', newBio, userId);
+  return _updateBio(userId, newBio);
 }
 
-/**
- * Updates the background color for a user's profile
- * @param {string} userId - ID of the user
- * @param {string} newColor - New background color (HEX or name)
- */
-export async function updateBgColor(
-  userId: string,
-  newColor: string
-): Promise<void> {
-  await db.run(
-    'UPDATE profiles SET bg_color = ? WHERE user_id = ?',
-    newColor,
-    userId
-  );
+export async function updateBgColor(userId: string, newColor: string): Promise<void> {
+  return _updateBgColor(userId, newColor);
 }
 
-/**
- * Updates the background image URL for a user's profile
- * @param {string} userId - ID of the user
- * @param {string} imageUrl - New background image URL
- */
-export async function updateBgImage(
-  userId: string,
-  imageUrl: string
-): Promise<void> {
-  await db.run(
-    'UPDATE profiles SET bg_image = ? WHERE user_id = ?',
-    imageUrl,
-    userId
-  );
+export async function updateBgImage(userId: string, imageUrl: string): Promise<void> {
+  return _updateBgImage(userId, imageUrl);
 }
 
-/**
- * Checks if the user has already claimed the starting aid
- * @param {string} userId - ID of the user
- * @returns {Promise<boolean>} True if already claimed
- */
 export async function hasStartingClaimed(userId: string): Promise<boolean> {
-  const row = await db.get(
-    'SELECT starting_claimed AS claimed FROM users WHERE id = ? ',
-    userId
-  );
-  return !!row?.claimed;
+  return _hasStartingClaimed(userId);
 }
 
-/**
- * Marks the user as having claimed the starting aid
- * @param {string} userId - ID of the user
- */
 export async function setStartingClaimed(userId: string): Promise<void> {
-  await db.run('UPDATE users SET starting_claimed = 1 WHERE id = ?', userId);
+  return _setStartingClaimed(userId);
 }
